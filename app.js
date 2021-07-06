@@ -2,6 +2,7 @@
 const express = require("express");
 const path = require("path");
 const mongoose = require("mongoose");
+const ejsMate = require('ejs-mate');// this is one ejs engine that we gonna use
 const Campground = require("./models/campground");
 const methodOverride = require("method-override");
 const campground = require("./models/campground");
@@ -22,6 +23,9 @@ db.once("open", () => {
 
 // starting express
 const app = express();
+
+// choosing the ejs-mate engine. This engine let me define a layout file 
+app.engine("ejs", ejsMate);
 
 // express to parse the post request body
 app.use(express.urlencoded({ extended: true }));
@@ -73,7 +77,7 @@ app.put("/campgrounds/:id", async (req, res) => {
 app.delete("/campgrounds/:id", async (req, res) => {
     const { id } = req.params;
     await Campground.findByIdAndDelete(id);
-    res.redirect("/campgrounds")
+    res.redirect("/campgrounds");
 });
 
 app.listen(3000, () => {
