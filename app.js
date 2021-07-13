@@ -66,7 +66,7 @@ app.post("/campgrounds", catchAsync(async (req, res, next) => {
                 description: Joi.string().required()
             }).required()
         })
-        //pass our data throw the schema created above
+        //pass our data throw the schema created abovee
         const {error} = campgroundSchema.validate(req.body);
         if(error){
             const msg = error.details.map(el => el.message).join(",") 
