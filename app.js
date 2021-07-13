@@ -8,8 +8,8 @@ const ExpressError = require("./utils/ExpressError");
 const Campground = require("./models/campground");
 const methodOverride = require("method-override");
 const campground = require("./models/campground");
-const joi = require("joi");
-const Joi = require("joi");
+const {campgroundSchema} = require("./schemas.js")
+const { networkInterfaces } = require("os");
 // const { title } = require("process");
 
 mongoose.connect("mongodb://localhost:27017/Campground-probe", {
@@ -40,6 +40,19 @@ app.set("views", path.join(__dirname, "views"));
 
 app.use(methodOverride("_method")); // _method is our query string
 
+//middleware function
+const validateCampground = (req, res, next) => {
+    //pass our data throw the schema created above
+    const { error } = campgroundSchema.validate(req.body);
+    if (error) {
+        // if there is an error, we are going to map over the errors.details to make a single string message, we take that and pass to a new express error that we're throwing
+        const msg = error.details.map((el) => el.message).join(",");
+        throw new ExpressError(msg, 400);
+    } else {
+        next();
+    }
+};
+
 //basic routes and  CRUD
 app.get("/", (req, res) => {
     res.render("home");
@@ -54,26 +67,10 @@ app.get("/campgrounds/new", (req, res) => {
     res.render("campgrounds/new");
 });
 
-app.post("/campgrounds", catchAsync(async (req, res, next) => {
-        // if(!req.body.campground) throw new ExpressError("Invalid campground data", 400)
-        const campgroundSchema = joi.object({
-            campground: Joi.object({
-                // gonna pass keys nested to campground, remember that in our body we define everything inside campground
-                title: Joi.string().required(),
-                price: Joi.number().required().min(0),
-                image: Joi.string().required(),
-                location: Joi.string().required(),
-                description: Joi.string().required()
-            }).required()
-        })
-        //pass our data throw the schema created abovee
-        const {error} = campgroundSchema.validate(req.body);
-        if(error){
-            const msg = error.details.map(el => el.message).join(",") 
-            throw new ExpressError(msg, 400)
-            console.log(msg)
-        }
-       
+app.post(
+    "/campgrounds",
+    validateCampground,
+    catchAsync(async (req, res, next) => {
         const campground = new Campground(req.body.campground);
         await campground.save();
         res.redirect(`campgrounds/${campground._id}`);
@@ -98,11 +95,10 @@ app.get(
 
 app.put(
     "/campgrounds/:id",
+    validateCampground,
     catchAsync(async (req, res) => {
         const { id } = req.params;
-        const campground = await Campground.findByIdAndUpdate(id, {
-            ...req.body.campground,
-        });
+        const campground = await Campground.findByIdAndUpdate(id, { ...req.body.campground });
         res.redirect(`/campgrounds/${campground._id}`);
     })
 );
