@@ -8,8 +8,10 @@ const ExpressError = require("./utils/ExpressError");
 const Campground = require("./models/campground");
 const methodOverride = require("method-override");
 const campground = require("./models/campground");
-const {campgroundSchema} = require("./schemas.js")
+const { campgroundSchema, reviewSchema } = require("./schemas.js");
 const { networkInterfaces } = require("os");
+const Review = require("./models/review");
+
 // const { title } = require("process");
 
 mongoose.connect("mongodb://localhost:27017/Campground-probe", {
@@ -53,6 +55,17 @@ const validateCampground = (req, res, next) => {
     }
 };
 
+const validateReview = (req, res, next) => {
+    const { error } = reviewSchema.validate(req.body);
+    if (error) {
+        // if there is an error, we are going to map over the errors.details to make a single string message, we take that and pass to a new express error that we're throwing
+        const msg = error.details.map((el) => el.message).join(",");
+        throw new ExpressError(msg, 400);
+    } else {
+        next();
+    }
+};
+
 //basic routes and  CRUD
 app.get("/", (req, res) => {
     res.render("home");
@@ -80,7 +93,7 @@ app.post(
 app.get(
     "/campgrounds/:id",
     catchAsync(async (req, res) => {
-        const campground = await Campground.findById(req.params.id);
+        const campground = await Campground.findById(req.params.id).populate("reviews");
         res.render("campgrounds/show", { campground });
     })
 );
@@ -98,7 +111,9 @@ app.put(
     validateCampground,
     catchAsync(async (req, res) => {
         const { id } = req.params;
-        const campground = await Campground.findByIdAndUpdate(id, { ...req.body.campground });
+        const campground = await Campground.findByIdAndUpdate(id, {
+            ...req.body.campground,
+        });
         res.redirect(`/campgrounds/${campground._id}`);
     })
 );
@@ -111,7 +126,29 @@ app.delete(
         res.redirect("/campgrounds");
     })
 );
-
+//Nested route for the reviews linked with the campground
+app.post("/campgrounds/:id/reviews",
+    validateReview,
+    catchAsync(async (req, res) => {
+        const campground = await Campground.findById(req.params.id);
+        const review = new Review(req.body.review);
+        campground.reviews.push(review); // add the new review to the campground
+        await review.save();
+        await campground.save();
+        res.redirect(`/campgrounds/${campground._id}`);
+    })
+);
+//we need that reviewID, because we want to remove that reference to whatever the review is in the campground, ans we want to remove the review itself
+app.delete(
+    "/campgrounds/:id/reviews/:reviewId",
+    catchAsync(async (req, res) => {
+        const { id, reviewId } = req.params;
+        console.log(req.params)
+        await Campground.findByIdAndUpdate(id, { $pull: { review: reviewId } }); // pull anything with the reviewID in the reviews list ( reviews are just an array of reviews, so it will look for this ID and pull that out it)
+        await Review.findByIdAndDelete(reviewId);
+        res.redirect(`/campgrounds/${id}`);
+    })
+);
 app.all("*", (req, res, next) => {
     //every request and every path
     next(new ExpressError("Page not found", 404)); // this ExpressError gonna be the err argument of the error handler
