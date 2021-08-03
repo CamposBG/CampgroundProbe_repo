@@ -1,0 +1,77 @@
+const express = require("express");
+const router = express.Router();
+const catchAsync = require("../utils/catchAsync");
+const ExpressError = require("../utils/ExpressError");
+const Campground = require("../models/campground");
+const { campgroundSchema } = require("../schemas.js");
+
+//middleware function
+const validateCampground = (req, res, next) => {
+	//pass our data throw the schema created above
+	const { error } = campgroundSchema.validate(req.body);
+	if (error) {
+		// if there is an error, we are going to map over the errors.details to make a single string message, we take that and pass to a new express error that we're throwing
+		const msg = error.details.map((el) => el.message).join(",");
+		throw new ExpressError(msg, 400);
+	} else {
+		next();
+	}
+};
+
+router.get("/", async (req, res) => {
+	const campgrounds = await Campground.find({});
+	res.render("campgrounds/index", { campgrounds });
+});
+
+router.get("/new", (req, res) => {
+	res.render("campgrounds/new");
+});
+
+router.post(
+	"/",
+	validateCampground,
+	catchAsync(async (req, res, next) => {
+		const campground = new Campground(req.body.campground);
+		await campground.save();
+		res.redirect(`campgrounds/${campground._id}`);
+	})
+);
+
+router.get(
+	"/:id",
+	catchAsync(async (req, res) => {
+		const campground = await Campground.findById(req.params.id).populate("reviews");
+		res.render("campgrounds/show", { campground });
+	})
+);
+
+router.get(
+	"/:id/edit",
+	catchAsync(async (req, res) => {
+		const campground = await Campground.findById(req.params.id);
+		res.render("campgrounds/edit", { campground });
+	})
+);
+
+router.put(
+	"/:id",
+	validateCampground,
+	catchAsync(async (req, res) => {
+		const { id } = req.params;
+		const campground = await Campground.findByIdAndUpdate(id, {
+			...req.body.campground,
+		});
+		res.redirect(`/campgrounds/${campground._id}`);
+	})
+);
+
+router.delete(
+	"/:id",
+	catchAsync(async (req, res) => {
+		const { id } = req.params;
+		await Campground.findByIdAndDelete(id);
+		res.redirect("/campgrounds");
+	})
+);
+
+module.exports = router;
