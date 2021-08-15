@@ -1,3 +1,4 @@
+//requires
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
@@ -6,11 +7,14 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const ExpressError = require('./utils/ExpressError');
 const methodOverride = require('method-override');
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
+const campgroundRoutes = require('./routes/campgrounds');
+const reviewRoutes = require('./routes/reviews');
+const User = require("./models/user");
+const userRoutes = require("./routes/user");
 
-
-const campgrounds = require('./routes/campgrounds');
-const reviews = require('./routes/reviews');
-
+//connection go DB
 mongoose.connect('mongodb://localhost:27017/yelp-camp', {
     useNewUrlParser: true,
     useCreateIndex: true,
@@ -24,15 +28,21 @@ db.once("open", () => {
     console.log("Database connected");
 });
 
+//configuration for app
+
 const app = express();
 
 app.engine('ejs', ejsMate)
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'))
 
+//middleware
+
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')))
+
+//sessions
 
 const sessionConfig = {
     secret: 'thisshouldbeabettersecret!',
@@ -47,14 +57,24 @@ const sessionConfig = {
 app.use(session(sessionConfig))
 app.use(flash());
 
+//set up passport
+app.use(passport.initialize());
+app.use(passport.session());//must be after app.use(session)
+passport.use(new LocalStrategy(User.authenticate())); //use the localStrategy, and the auth method is located at our user model and it is called User.authenticate
+passport.serializeUser(User.serializeUser());//serialize is how to stored and unstored to a session 
+passport.deserializeUser(User.deserializeUser());
+
+
 app.use((req, res, next) => {
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
     next();
 })
 
-app.use('/campgrounds', campgrounds)
-app.use('/campgrounds/:id/reviews', reviews)
+
+app.use("/", userRoutes)
+app.use('/campgrounds', campgroundRoutes)
+app.use('/campgrounds/:id/reviews', reviewRoutes)
 
 app.get('/', (req, res) => {
     res.render('home')
