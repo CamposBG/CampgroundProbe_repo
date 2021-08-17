@@ -7,18 +7,21 @@ const Campground = require('../models/campground');
 //importing our controllers 
 const campgrounds = require("../controllers/campgrounds")
 
-router.get('/', catchAsync(campgrounds.index));
+router.route("/")
+    .get(catchAsync(campgrounds.index))
+    .post(isLoggedIn, validateCampground, catchAsync(campgrounds.createCampground));
+
 
 router.get('/new', isLoggedIn, campgrounds.renderNewForm)
 
-router.post('/', isLoggedIn, validateCampground, catchAsync(campgrounds.createCampground))
+//this route needs to come after /new otherwise the new will be threated as an id
+router.route("/:id")
+    .get(catchAsync(campgrounds.showCampground))
+    .put(isLoggedIn, isAuthor, validateCampground, catchAsync(campgrounds.renderEditForm))
+    .delete(isLoggedIn, isAuthor, catchAsync(campgrounds.deleteCampground));
 
-router.get('/:id', catchAsync(campgrounds.showCampground));
+
 
 router.get('/:id/edit', isLoggedIn, isAuthor, catchAsync(campgrounds.updateCampground))
-
-router.put('/:id', isLoggedIn, isAuthor, validateCampground, catchAsync(campgrounds.renderEditForm));
-
-router.delete('/:id', isLoggedIn, isAuthor, catchAsync(campgrounds.deleteCampground));
 
 module.exports = router;
