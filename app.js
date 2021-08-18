@@ -1,3 +1,8 @@
+//if we are running in development mode require the dotenv package, which is going to take the variables I've defined in the file .env and add them into process
+if (process.env.NODE_ENV !== "production") {
+    require("dotenv").config();
+}
+
 //requires
 const express = require('express');
 const path = require('path');
