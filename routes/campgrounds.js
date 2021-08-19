@@ -19,9 +19,9 @@ router.get('/new', isLoggedIn, campgrounds.renderNewForm)
 //this route needs to come after /new otherwise the new will be threated as an id
 router.route("/:id")
     .get(catchAsync(campgrounds.showCampground))
-    .put(isLoggedIn, isAuthor, validateCampground, catchAsync(campgrounds.renderEditForm))
+    .put(isLoggedIn, isAuthor, upload.array("image"), validateCampground, catchAsync(campgrounds.updateCampground))
     .delete(isLoggedIn, isAuthor, catchAsync(campgrounds.deleteCampground));
 
-router.get('/:id/edit', isLoggedIn, isAuthor, catchAsync(campgrounds.updateCampground))
+router.get('/:id/edit', isLoggedIn, isAuthor, catchAsync(campgrounds.renderEditForm))
 
 module.exports = router;
