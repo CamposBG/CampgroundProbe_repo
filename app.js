@@ -20,10 +20,12 @@ const User = require("./models/user");
 const userRoutes = require("./routes/user");
 const mongoSanitize = require('express-mongo-sanitize');
 const helmet = require("helmet");
+// const dbURL = process.env.DB_URL; //atlas DB
 
 
 //connection go DB
-mongoose.connect('mongodb://localhost:27017/yelp-camp', {
+mongoose.connect('mongodb://localhost:27017/yelp-camp', { //local DB
+// mongoose.connect(dbURL, { //atlas DB
     useNewUrlParser: true,
     useCreateIndex: true,
     useUnifiedTopology: true,
