@@ -20,11 +20,12 @@ const User = require("./models/user");
 const userRoutes = require("./routes/user");
 const mongoSanitize = require('express-mongo-sanitize');
 const helmet = require("helmet");
+const MongoStore = require('connect-mongo');
 // const dbURL = process.env.DB_URL; //atlas DB
 
-
+const dbURL = "mongodb://localhost:27017/yelp-camp"
 //connection go DB
-mongoose.connect('mongodb://localhost:27017/yelp-camp', { //local DB
+mongoose.connect(dbURL, { //local DB
 // mongoose.connect(dbURL, { //atlas DB
     useNewUrlParser: true,
     useCreateIndex: true,
@@ -54,12 +55,21 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.use(mongoSanitize());
 
 //sessions
-
+const store = new MongoStore({
+    mongoUrl:dbURL,
+    secret: "thisshouldbeabettersecret!",
+    touchAfter: 24 * 60 * 60
+});
+store.on("error", function(e){
+    console.log("SESSION STORE ERROR", e)
+});
 const sessionConfig = {
+    store,
     name:"session",
     secret: 'thisshouldbeabettersecret!',
     resave: false,
     saveUninitialized: true,
+    touchAfter: 24 * 60 * 60,
     cookie: {
         httpOnly: true,
         // secure: true, // only allow https
