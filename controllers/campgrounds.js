@@ -30,7 +30,7 @@ module.exports.createCampground = async (req, res, next) => {
 }
 
 module.exports.showCampground = async (req, res,) => {
-    const campground = await Campground.findById(req.params.id).populate({
+    const campground = await Campground.findById(req.params.id).limit( 10 ).populate({
         path: 'reviews',
         populate: {
             path: "author"
