@@ -1,0 +1,345 @@
+/* Variables */
+:root{
+    --mainColor:#eaeaea ;
+    --secondaryColor:#fff;
+
+    --borderColor:#c1c1c1;
+
+    --mainText:black;
+    --secondaryText: #4b5156;
+
+    --themDotBorder:#24292e;
+
+    --previewBg: rgb(250, 249, 243, 0.8);
+    --preview-shadow: #f0ead6;
+}
+
+html, body {
+    padding: 0;
+    margin: 0;
+
+}
+
+body *{
+    transition: 0.3s;
+}
+
+h1, h2, h3, h4, h5, h6, strong {
+    color: var(--mainText);
+    font-family: 'Russo One', sans-serif;
+    font-weight: 400;
+}
+
+p, li, span, label, input, textarea{
+    color: var(--mainText);
+    font-family: 'Roboto Mono', monospace;
+}
+
+a {
+    text-decoration: none;
+    color: #17a2b8;
+    font-family: 'Roboto Mono', monospace;
+}
+
+
+ul{
+    list-style: none;/* no bullets on the list */
+}
+
+h1 {font-size: 56px;}
+h2 {font-size: 36px;}
+h3 {font-size: 28px;}
+h4 {font-size: 24px;}
+h5 {font-size: 20px;}
+h6 {font-size: 16px;}
+
+.section1{
+    background-color: var(--mainColor);
+    border-bottom:1px solid var(--borderColor);
+    overflow: auto;
+}
+.section2{
+    background-color: var(--secondaryColor);
+    border-bottom:1px solid var(--borderColor);
+    overflow: auto;
+}
+
+.main-container{
+    width: 1200px;
+    margin: 0 auto; /* margin:vert hor */
+}
+
+.greeting-wrapper{
+    display: grid;
+    text-align: center;
+    align-content: center;/* align in the y axis */
+    min-height: 10em;
+}
+
+.intro-wrapper{
+    background-color: var(--secondaryColor);
+    border: 1px solid var(--borderColor);
+    border-radius: 5px 5px 0 0;
+
+   
+    -webkit-box-shadow: -1px 1px 3px -1px rgba(0,0,0,0.75);
+    -moz-box-shadow:-1px 1px 3px -1px rgba(0,0,0,0.75) ; 
+    box-shadow: -1px 1px 3px -1px rgba(0,0,0,0.75);
+   
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: /* for that I need to identify the grid areas as  seen in comment ##1*/
+        'nav-wrapper nav-wrapper' /* nav will take the 2 spaces set by grid-template-colum*/
+        'left-column right-column' /*laft and right collum will take one space each of the 2 */
+    ; 
+}
+
+.nav-wrapper{
+    grid-area: nav-wrapper;/* ##1 - I give a name for my grid area*/
+    border-bottom: 1px solid var(--borderColor);
+    border-radius: 5px 5px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items:center ;
+      
+    background-color: var(--mainColor);
+}
+
+#navigation {
+margin: 0;
+padding: 10px;
+}
+#navigation li {
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.dots-wrapper{
+ display: flex;
+ padding: 10px;
+}
+
+.left-column h5{
+    text-align: center;
+    line-height: 0;
+
+}
+#profile_pic{
+    display: block;
+    margin: 0 auto;
+    
+    height: 200px;
+    width: 200px;
+    object-fit: cover;
+    border: 2px solid var(--borderColor);
+
+}
+#theme-options-wrapper{
+    display: flex;
+    justify-content: center;
+}
+.theme-dot {
+    height: 30px;
+    width: 30px;
+    border-radius: 50%;
+   
+    margin: 5px;
+    border: 2px solid var(--themDotBorder);
+
+    -webkit-box-shadow: -1px 1px 3px -1px rgba(0,0,0,0.75);
+    -moz-box-shadow:-1px 1px 3px -1px rgba(0,0,0,0.75) ; 
+    box-shadow: -1px 1px 3px -1px rgba(0,0,0,0.75);
+    
+    cursor: pointer;
+}
+
+.theme-dot:hover{
+    border-width: 5px;
+}
+
+#light-mode {
+    background-color:  #fff;
+}
+#blue-mode {
+    background-color:  #192734;
+}
+#green-mode {
+    background-color:  #78866b;
+}
+#purple-mode {
+    background-color:  #7e4c74;
+}
+
+#settings-note {
+    font-size: 12px;
+    font-style: italic;
+    text-align: center;
+}
+
+#dot-1{
+ background-color: #fc6058;
+}
+#dot-2{
+    background-color: #fec02f;
+
+}
+#dot-3{
+    background-color: #2aca3e;
+
+}
+.browser-dot{
+    /* background-color: black; */
+    height: 15px;
+    width: 15px;
+    border-radius: 50px;
+    margin: 3px;
+}
+
+.left-column{
+    grid-area: left-column;
+    padding-bottom:50px ;
+    padding-top: 50px;
+    
+}
+.right-column{
+    grid-area: right-column;    
+    display: grid; /*to center the previews box*/
+    align-content: center;/*align in the y axis*/
+
+    padding-top: 50px;
+    padding-bottom: 50px;
+}
+
+#preview-shadow {
+    background-color: var(--preview-shadow);
+    width: 300px;
+    /*to give a impression of shadow, I will do it smaller, and adjust the padding :*/
+    height: 180px;
+    padding-left: 30px;
+    padding-top: 30px;
+
+
+}
+#preview {
+    width: 300px;
+    border: 1.5px solid #17a2b8;
+    background-color: var(--previewBg);
+    padding: 15px;
+    position: relative;/*comment ##3*/ 
+}
+
+
+.corner {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    border: 1.5px solid #17a2b8;
+    background-color: #fff;
+    position: absolute; /* ##2 - for the position works and the dots get in the corners of the preview box I need to set the parent of .corner to be relative  see comment ##3*/
+}
+
+
+/* for positioning the dots se comment ##2*/ 
+#corner-tl{
+ top: -5px; 
+ left: -5px;
+}
+#corner-tr{
+    top: -5px;
+    right: -5px;
+}
+#corner-bl{
+    bottom: -5px;
+    left: -5px;
+}
+#corner-br{
+    bottom: -5px;
+    right: -5px;
+}
+
+
+/* Setting the 2 columns of about section (section 2)*/ 
+.about-wrapper {
+    display: grid;
+    grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));/* we are repeating the action inside the ().that is to auto-fit as many columns as possible in this row. The columns should never been smaller than 300px  */ 
+    padding-top: 50px;
+    padding-bottom: 50px;
+    gap: 100px;
+}
+#skills {
+    display: flex;
+    justify-content: space-evenly;
+    background-color: var(--preview-shadow);
+}
+
+.social-links{
+    display: grid;
+    align-content: center;
+    text-align: center;
+}
+#social_img{
+    width: 100%;
+}
+
+.post-wrapper{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 330px);
+    gap: 20px;
+    justify-content: center;
+    padding-bottom: 50px;
+}
+
+.post{
+    border: 1x solid var(--borderColor);
+    -webkit-box-shadow: -1px 1px 3px -1px rgba(0,0,0,0.75);
+    -moz-box-shadow:-1px 1px 3px -1px rgba(0,0,0,0.75) ; 
+    box-shadow: -1px 1px 3px -1px rgba(0,0,0,0.75);
+
+}
+
+.thumbnail{
+    display: block;
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+.post-preview{
+    background-color: #fff;
+    padding:15px ;
+}
+
+.post-title{
+    color: black;
+    margin: 0;
+}
+.post-intro{
+    color: #4b5156;
+    font-size: 16px;
+}
+/* @media mediaType(sreen, all, print, speech) and (rule/condition) */
+@media screen and (max-width: 1200px) {
+    .main-container{
+        width: 95%;
+    }
+}
+
+/* adjust the preview box size*/ 
+@media screen and (max-width: 800px) {
+    .intro-wrapper{
+        display: grid;
+        grid-template-columns: 1fr;/* just one colum, so one fraction of our entire container (1fr)*/ 
+        grid-template-areas: /* for that I need to identify the grid areas as  seen in comment ##1*/
+        'nav-wrapper'
+        'left-column'    
+        'right-column'
+        ; 
+    }
+/* fiz the overflow and alignment of the preview box*/
+
+    .right-column{
+        justify-content:center ; /* I can do this because it was already set as grid bellow*/
+    }
+    
+}
