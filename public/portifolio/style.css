@@ -336,10 +336,16 @@ padding: 10px;
         'right-column'
         ; 
     }
+  
 /* fiz the overflow and alignment of the preview box*/
 
     .right-column{
         justify-content:center ; /* I can do this because it was already set as grid bellow*/
+        margin-left: -10px !important;
+    }
+    
+    #preview{
+        margin-left: -20px !important;
     }
     
 }
